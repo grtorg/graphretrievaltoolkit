@@ -74,7 +74,7 @@ def similarity(h_i, h_j, mode:str = "cosine"):
     if mode == "hamming":
         return torch.cdist(h_i, h_j, p=0)
     if mode == "hinge":
-        prod = 1 - torch.matmmul(h_i, h_j)
+        prod = 1 - torch.matmul(h_i, h_j)
         return torch.max(torch.zeros(prod.shape), prod)
     if mode == "min_sum":
         return torch.sum(torch.min(h_i, h_j), dim=-1)
