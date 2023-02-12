@@ -25,15 +25,47 @@ class graphMatcher():
     def graph_match_model(self, av: Type[Namespace]):
         self.model = None
         if av.model_name == 'NeuroMatch':
-            self.model = SkipLastGNN(av)
+            self.model = SkipLastGNN(self, input_dim = av.input_dim, hidden_dim = av.hidden_dim, output_dim = av.output_dim, 
+                                     num_layers = av.num_layers, conv_type = av.conv_type, dropout = av.dropout,
+                                     skip = av.skip)
+                                     
         elif av.model_name == 'SimGNN':
-            self.model = SimGNN(av)
+            self.model = SimGNN(self, input_dim = av.input_dim, ntn_slices = av.ntn_slices, filters = av.filters,
+                                mlp_neurons = av.mlp_neurons, hist_bins = av.hist_bins, conv = av.conv, 
+                                activation = av.activation, activation_slope = av.activation_slope, 
+                                include_histogram = av.include_histogram)
+
         elif av.model_name == 'GMNEmbed':
-            self.model = GMNEmbed(av)
+            self.model = GMNEmbed(self, node_feature_dim = av.node_feature_dim,
+                                  enc_node_hidden_sizes = av.enc_edge_hidden_sizes, 
+                                  prop_node_hidden_sizes = av.prop_node_hidden_sizes,
+                                  prop_message_hidden_sizes = av.prop_message_hidden_sizes,
+                                  aggr_gate_hidden_sizes = av.aggr_gate_hidden_sizes,
+                                  aggr_mlp_hidden_sizes = av.aggr_mlp_hidden_sizes,
+                                  edge_feature_dim = av.edge_feature_dim,
+                                  enc_edge_hidden_sizes = av.enc_edge_hidden_sizes,
+                                  message_net_init_scale = av.message_net_init_scale, 
+                                  node_update_type = av.node_update_type, 
+                                  use_reverse_direction = av.use_reverse_direction, 
+                                  reverse_dir_param_different = av.reverse_dir_param_different, 
+                                  layer_norm = av.layer_norm)
+
         elif av.model_name == 'GMNMatch':
-            self.model = GMNMatch(av)
-        elif av.model_name == 'GraphSim':
-            self.model = GraphSim(av)
+            self.model = GMNMatch(self, node_feature_dim = av.node_feature_dim,
+                                  enc_node_hidden_sizes = av.enc_edge_hidden_sizes, 
+                                  prop_node_hidden_sizes = av.prop_node_hidden_sizes,
+                                  prop_message_hidden_sizes = av.prop_message_hidden_sizes,
+                                  aggr_gate_hidden_sizes = av.aggr_gate_hidden_sizes,
+                                  aggr_mlp_hidden_sizes = av.aggr_mlp_hidden_sizes,
+                                  edge_feature_dim = av.edge_feature_dim,
+                                  enc_edge_hidden_sizes = av.enc_edge_hidden_sizes,
+                                  message_net_init_scale = av.message_net_init_scale, 
+                                  node_update_type = av.node_update_type, 
+                                  use_reverse_direction = av.use_reverse_direction, 
+                                  reverse_dir_param_different = av.reverse_dir_param_different, 
+                                  attention_sim_metric= av.attention_sim_metric,
+                                  layer_norm = av.layer_norm)
+
         elif av.model_name == 'ISONET':
             self.model = ISONET(av)
         else:
