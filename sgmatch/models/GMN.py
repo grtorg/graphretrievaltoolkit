@@ -1,5 +1,4 @@
-from typing import Optional, List, Type
-from sgmatch.utils.utility import Namespace
+from typing import Optional, List
 
 import torch
 from torch_geometric.nn.aggr.attention import AttentionalAggregation
@@ -52,36 +51,36 @@ class GMNEmbed(torch.nn.Module):
             (default: :obj:`True`)
     """
     # TODO: Provide default arguments for MLP layer sizes
-    r"""def __init__(self, av: Type[Namespace], node_feature_dim: int, enc_node_hidden_sizes: List[int], 
+    def __init__(self, node_feature_dim: int, enc_node_hidden_sizes: List[int], 
                 prop_node_hidden_sizes: List[int], prop_message_hidden_sizes: List[int],
                 aggr_gate_hidden_sizes: List[int], aggr_mlp_hidden_sizes: List[int],
                 edge_feature_dim: Optional[int] = None, enc_edge_hidden_sizes: Optional[List[int]] = None,
                 message_net_init_scale: float = 0.1, node_update_type: str = 'residual', 
                 use_reverse_direction: bool = True, reverse_dir_param_different: bool = True, 
-                layer_norm: bool = False):"""
-    def __init__(self, av: Type[Namespace]):
+                layer_norm: bool = False):
+
         super(GMNEmbed, self).__init__()
-        self.node_feature_dim = av.node_feature_dim
-        self.edge_feature_dim = av.edge_feature_dim
+        self.node_feature_dim = node_feature_dim
+        self.edge_feature_dim = edge_feature_dim
 
         # Encoder Module        
-        self.enc_node_layers = av.enc_node_hidden_sizes
-        self.enc_edge_layers = av.enc_edge_hidden_sizes
+        self.enc_node_layers = enc_node_hidden_sizes
+        self.enc_edge_layers = enc_edge_hidden_sizes
         
         # Propagation Module
-        self.prop_node_layers = av.prop_node_hidden_sizes
-        self.prop_message_layers = av.prop_message_hidden_sizes
+        self.prop_node_layers = prop_node_hidden_sizes
+        self.prop_message_layers = prop_message_hidden_sizes
         
         # Aggregation Module
-        self.aggr_gate_layers = av.aggr_gate_hidden_sizes
-        self.aggr_mlp_layers = av.aggr_mlp_hidden_sizes
+        self.aggr_gate_layers = aggr_gate_hidden_sizes
+        self.aggr_mlp_layers = aggr_mlp_hidden_sizes
 
-        self.message_net_init_scale = av.message_net_init_scale # Unused
-        self.node_update_type = av.node_update_type
-        self.use_reverse_direction = av.use_reverse_direction
-        self.reverse_dir_param_different = av.reverse_dir_param_different
+        self.message_net_init_scale = message_net_init_scale # Unused
+        self.node_update_type = node_update_type
+        self.use_reverse_direction = use_reverse_direction
+        self.reverse_dir_param_different = reverse_dir_param_different
 
-        self.layer_norm = av.layer_norm
+        self.layer_norm = layer_norm
         self.prop_type = "embedding"
 
         # TODO: Include assertion method to ensure correct dimensionality for mlp outputs
@@ -172,7 +171,7 @@ class GMNMatch(torch.nn.Module):
             (default: :obj:`True`)
     """
     # TODO: Provide default arguments for MLP layer sizes
-    def __init__(self, av: Type[Namespace], node_feature_dim: int, enc_node_hidden_sizes: List[int], 
+    def __init__(self, node_feature_dim: int, enc_node_hidden_sizes: List[int], 
                 prop_node_hidden_sizes: List[int], prop_message_hidden_sizes: List[int],
                 aggr_gate_hidden_sizes: List[int], aggr_mlp_hidden_sizes: List[int],
                 edge_feature_dim: Optional[int] = None, enc_edge_hidden_sizes: Optional[List[int]] = None,
@@ -180,28 +179,28 @@ class GMNMatch(torch.nn.Module):
                 use_reverse_direction: bool = True, reverse_dir_param_different: bool = True, 
                 attention_sim_metric: str = "euclidean", layer_norm: bool = False):
         super(GMNMatch, self).__init__()
-        self.node_feature_dim = av.node_feature_dim
-        self.edge_feature_dim = av.edge_feature_dim
+        self.node_feature_dim = node_feature_dim
+        self.edge_feature_dim = edge_feature_dim
 
         # Encoder Module        
-        self.enc_node_layers = av.enc_node_hidden_sizes
-        self.enc_edge_layers = av.enc_edge_hidden_sizes
+        self.enc_node_layers = enc_node_hidden_sizes
+        self.enc_edge_layers = enc_edge_hidden_sizes
         
         # Propagation Module
-        self.prop_node_layers = av.prop_node_hidden_sizes
-        self.prop_message_layers = av.prop_message_hidden_sizes
+        self.prop_node_layers = prop_node_hidden_sizes
+        self.prop_message_layers = prop_message_hidden_sizes
         
         # Aggregation Module
-        self.aggr_gate_layers = av.aggr_gate_hidden_sizes + [av.node_feature_dim]
-        self.aggr_mlp_layers = av.aggr_mlp_hidden_sizes + [av.node_feature_dim]
+        self.aggr_gate_layers = aggr_gate_hidden_sizes + [node_feature_dim]
+        self.aggr_mlp_layers = aggr_mlp_hidden_sizes + [node_feature_dim]
 
-        self.message_net_init_scale = av.message_net_init_scale # Unused
-        self.node_update_type = av.node_update_type
-        self.use_reverse_direction = av.use_reverse_direction
-        self.reverse_dir_param_different = av.reverse_dir_param_different
+        self.message_net_init_scale = message_net_init_scale # Unused
+        self.node_update_type = node_update_type
+        self.use_reverse_direction = use_reverse_direction
+        self.reverse_dir_param_different = reverse_dir_param_different
 
-        self.attention_sim_metric = av.attention_sim_metric
-        self.layer_norm = av.layer_norm
+        self.attention_sim_metric = attention_sim_metric
+        self.layer_norm = layer_norm
         self.prop_type = "matching"
         
         self.setup_layers()

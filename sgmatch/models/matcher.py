@@ -5,7 +5,7 @@ from sgmatch.utils.utility import Namespace
 from NeuroMatch import SkipLastGNN
 from SimGNN import SimGNN
 from GMN import GMNEmbed, GMNMatch
-from GraphSim import GraphSim
+#from GraphSim import GraphSim
 from ISONET import ISONET
 
 class graphMatcher():
@@ -25,17 +25,17 @@ class graphMatcher():
     def graph_match_model(self, av: Type[Namespace]):
         self.model = None
         if av.model_name == 'NeuroMatch':
-            model = SkipLastGNN(av)
+            self.model = SkipLastGNN(av)
         elif av.model_name == 'SimGNN':
-            model = SimGNN(av)
+            self.model = SimGNN(av)
         elif av.model_name == 'GMNEmbed':
-            model = GMNEmbed(av)
+            self.model = GMNEmbed(av)
         elif av.model_name == 'GMNMatch':
-            model = GMNMatch(av)
+            self.model = GMNMatch(av)
         elif av.model_name == 'GraphSim':
-            model = GraphSim(av)
+            self.model = GraphSim(av)
         elif av.model_name == 'ISONET':
-            model = ISONET(av)
+            self.model = ISONET(av)
         else:
             raise NotImplementedError("The model name is incorrect, please use the correct model name")
 
