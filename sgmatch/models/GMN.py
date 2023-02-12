@@ -12,7 +12,7 @@ from ..modules.attention import CrossGraphAttention
 from ..utils.utility import setup_linear_nn, setup_LRL_nn
 
 class GMNEmbed(torch.nn.Module):
-     r"""
+    r"""
     End to end implementation of Graph Matching Networks - Embed from the `"Graph Matching Networks for Learning the Similarity
     of Graph Structured Objects" <https://arxiv.org/abs/1904.12787>`_ paper.
     
@@ -52,13 +52,14 @@ class GMNEmbed(torch.nn.Module):
             (default: :obj:`True`)
     """
     # TODO: Provide default arguments for MLP layer sizes
-    def __init__(self, av: Type[Namespace], node_feature_dim: int, enc_node_hidden_sizes: List[int], 
+    r"""def __init__(self, av: Type[Namespace], node_feature_dim: int, enc_node_hidden_sizes: List[int], 
                 prop_node_hidden_sizes: List[int], prop_message_hidden_sizes: List[int],
                 aggr_gate_hidden_sizes: List[int], aggr_mlp_hidden_sizes: List[int],
                 edge_feature_dim: Optional[int] = None, enc_edge_hidden_sizes: Optional[List[int]] = None,
                 message_net_init_scale: float = 0.1, node_update_type: str = 'residual', 
                 use_reverse_direction: bool = True, reverse_dir_param_different: bool = True, 
-                layer_norm: bool = False):
+                layer_norm: bool = False):"""
+    def __init__(self, av: Type[Namespace]):
         super(GMNEmbed, self).__init__()
         self.node_feature_dim = av.node_feature_dim
         self.edge_feature_dim = av.edge_feature_dim

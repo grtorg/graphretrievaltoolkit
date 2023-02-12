@@ -42,10 +42,11 @@ class SimGNN(torch.nn.Module):
         include_histogram (bool): Flag for including Strategy Two: Nodewise comparison
             from SimGNN. (default: :obj:`True`)
     """
-    def __init__(self, av: Type[Namespace], input_dim: int, ntn_slices: int = 16, filters: list = [64, 32, 16],
-                 mlp_neurons: List[int] = [32,16,8,4], hist_bins: int = 16, conv: str = "GCN", 
-                 activation: str = "tanh", activation_slope: Optional[float] = None, 
-                 include_histogram: bool = True):
+    # def __init__(self, av: Type[Namespace], input_dim: int, ntn_slices: int = 16, filters: list = [64, 32, 16],
+    #             mlp_neurons: List[int] = [32,16,8,4], hist_bins: int = 16, conv: str = "GCN", 
+    #             activation: str = "tanh", activation_slope: Optional[float] = None, 
+    #              include_histogram: bool = True):
+    def __init__(self, av: Type[Namespace]):
         # TODO: give a better name to the include_histogram flag 
         super(SimGNN, self).__init__()
         self.input_dim = av.input_dim

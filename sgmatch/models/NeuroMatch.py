@@ -11,9 +11,10 @@ from utils.constants import CONVS
 class SkipLastGNN(torch.nn.Module):
     r"""
     """
-    def __init__(self, av: Type[Namespace], input_dim: int, hidden_dim: int, output_dim: int, 
+    """def __init__(self, av: Type[Namespace], input_dim: int, hidden_dim: int, output_dim: int, 
                 num_layers: int, conv_type: str = "SAGEConv", dropout: float = 0.0,
-                skip: str = "learnable"):
+                skip: str = "learnable"):"""
+    def __init__(self, av: Type[Namespace]):
         super(SkipLastGNN, self).__init__()
         self.input_dim = av.input_dim
         self.hidden_dim = av.hidden_dim
