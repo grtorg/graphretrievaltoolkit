@@ -85,17 +85,16 @@ class GlobalContextAttention(torch.nn.Module):
         return ('{}(input_dim={})').format(self.__class__.__name__, self.input_dim)
 
 class CrossGraphAttention(torch.nn.Module):
-    # r"""
-    # Attention mechanism layer for the cross-graph attention operator
-    # from the `"Graph Matching Networks for Learning the Similarity of Graph 
-    # Structured Objects" 
-    # https://arxiv.org/pdf/1904.12787.pdf`_ paper
+    r"""
+    Attention mechanism layer for the cross-graph attention operator from the 
+    `"Graph Matching Networks for Learning the Similarity of Graph Structured Objects" 
+    https://arxiv.org/pdf/1904.12787.pdf`_ paper
 
-    # TODO: Include latex formula for attention computation and aggregation update
+    TODO: Include latex formula for attention computation and aggregation update
 
-    # Args:
-    #     similarity_metric: Similarity metric to be used to compute attention scoring 
-    # """
+    Args:
+        similarity_metric: Similarity metric to be used to compute attention scoring 
+    """
     def __init__(self, similarity_metric: str = "euclidean"):
         super(CrossGraphAttention, self).__init__()
         self.similarity = similarity_metric

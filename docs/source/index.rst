@@ -17,6 +17,12 @@ Contents
 
     installation
 
+.. .. toctree::
+..     :maxdepth: 1
+..     :caption: Models
+
+..     models
+
 .. toctree::
     :maxdepth: 1
     :caption: Modules
