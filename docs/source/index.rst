@@ -10,4 +10,13 @@ Contents
 --------
 
 .. toctree::
-    usage
+    :maxdepth: 1
+    :caption: Install GRT
+
+    installation
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Modules
+
+    modules
