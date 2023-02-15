@@ -19,7 +19,7 @@ We first download the dataset from `torch_geomtric` as follows:
 """
 from torch_geometric.datasets import GEDDataset
 name = "AIDS700nef"
-ROOT_DIR = 'C:\Users\Kunind Sahu\Documents\graphretrievaltoolkit'
+ROOT_DIR = '../'
 train_graphs = GEDDataset(root=os.path.join(ROOT_DIR, f'data/{name}/train'), train = True, name=name)
 test_graphs = GEDDataset(root=os.path.join(ROOT_DIR, f'data/{name}/test'), train = False, name=name)
 
