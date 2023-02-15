@@ -1,4 +1,4 @@
 sgmatch.modules
 =========================
 
-.. autoclass:: sgmatch.modules.attention.CrossGraphAttention
+.. autoclass:: sgmatch.modules.attention.GlobalContextAttention

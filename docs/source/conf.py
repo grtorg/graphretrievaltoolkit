@@ -3,7 +3,7 @@
 import os.path as osp
 import sys
 
-sys.path.insert(0, osp.abspath('../../sgmatch/'))
+sys.path.insert(0, osp.abspath('../../'))
 
 # -- Project information
 
@@ -31,6 +31,7 @@ intersphinx_mapping = {
 intersphinx_disabled_domains = ['std']
 
 templates_path = ['_templates']
+autodoc_member_order = 'bysource'
 
 # -- Options for HTML output
 

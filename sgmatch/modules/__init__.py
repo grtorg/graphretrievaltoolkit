@@ -15,5 +15,5 @@ __all__ = [
 
 att_classes = __all__[:2]
 enc_classes = __all__[2:4]
-prop_classes = __all__[5]
-score_classes = __all__[6]
+prop_classes = __all__[4]
+score_classes = __all__[5]

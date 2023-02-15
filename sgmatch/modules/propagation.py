@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 
 import torch
 from torch.functional import Tensor
@@ -196,7 +196,7 @@ class GraphProp(torch.nn.Module):
                 raise ValueError('Unknown node update type %s' % self.node_update_type)
 
     def forward(self, node_features: Tensor, from_idx: Tensor, to_idx: Tensor, node_features_j: Optional[Tensor] = None,
-                edge_features: Optional[Tensor] = None, att_module: Optional[torch.nn.Module | str] = None):
+                edge_features: Optional[Tensor] = None, att_module: Optional[Union[torch.nn.Module, str]] = None):
         # TODO: Generalise function to accept edge_index and sparse edge indices
         # TODO: Checking validity of user-provided cross graph attention module
         r"""
