@@ -1,13 +1,18 @@
 # Configuration file for the Sphinx documentation builder.
 
+import os.path as osp
+import sys
+
+sys.path.insert(0, osp.abspath('../../sgmatch/'))
+
 # -- Project information
 
-project = ''
-copyright = ''
-author = ''
+project = 'GRT'
+# copyright = ''
+author = 'Sanidhya Anand'
 
-release = ''
-version = ''
+# release = ''
+# version = ''
 
 # -- General configuration
 

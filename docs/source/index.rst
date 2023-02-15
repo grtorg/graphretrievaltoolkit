@@ -1,4 +1,6 @@
-Welcome to GRT's documentation!
+:github_url: https://github.com/sanidhyaanand/graphretrievaltoolkit 
+
+Graph Retrieval Toolkit
 ===============================
 
 **GRT** (Graph retrieval toolkit) is a lorem ipsum dolum
