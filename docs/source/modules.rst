@@ -5,6 +5,8 @@ Attention
 -------------------------
 .. autoclass:: sgmatch.modules.attention.GlobalContextAttention
 
+.. autofunction:: sgmatch.modules.scoring.similarity
+
 .. .. autoclass:: sgmatch.modules.attention.CrossGraphAttention
 
 .. Encoding
