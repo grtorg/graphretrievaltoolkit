@@ -91,6 +91,40 @@ class MLPEncoder(torch.nn.Module):
         return ("{}(node_hidden_sizes={}, edge_hidden_sizes={})").format(self.__class__.__name__, 
                                                                         self.node_hidden_sizes,  
                                                                         self.edge_hidden_sizes)
+    
+class GumbelSinkhornNetwork(torch.nn.Module):
+    r"""
+    """
+    def __init__(self, temp: float = 0.1, eps: float = 1e-20, noise_factor: float = 1, n_iters: int = 20):
+        super().__init__()
+        self.temp = temp
+        self.eps = eps
+        self.noise_factor = noise_factor
+        self.n_iters = n_iters
+
+    def sample_from_gumbel(self, shape:List[int], eps:int=1e-20):
+        U = torch.rand(shape).float()
+        return -torch.log(eps - torch.log(U + eps))
+
+    def forward(self, log_alpha:Tensor):
+        batch_size = log_alpha.size()[0]
+        n = log_alpha.size()[1]
+        log_alpha = log_alpha.view(-1, n, n)
+        
+        # Sampling from Gumbel Distribution
+        shape = [batch_size, n, n]
+        noise = self.sample_from_gumbel(shape, self.eps)*self.noise_factor
+        log_alpha = log_alpha + noise
+
+        # Iteration 0 of GS Network
+        log_alpha = log_alpha/self.temp
+
+        for i in range(self.n_iters):
+            # Row Scaling
+            log_alpha = log_alpha - (torch.logsumexp(log_alpha, dim=2, keepdim=True)).view(-1, n, 1)
+            # Column Scaling
+            log_alpha = log_alpha - (torch.logsumexp(log_alpha, dim=1, keepdim=True)).view(-1, 1, n)
+        return torch.exp(log_alpha)
 
 class OrderEmbedder(torch.nn.Module):
     r"""
