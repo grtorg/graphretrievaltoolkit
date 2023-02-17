@@ -1,12 +1,12 @@
-from typing import Optional
+from typing import Optional, List
 
 import torch
 from torch.functional import Tensor
 
 class NeuralTensorNetwork(torch.nn.Module):
     r"""
-    Neural Tensor Network layer from the `"SimGNN: A Neural Network 
-    Approach to Fast Graph Similarity Computation"
+    Neural Tensor Network layer from the 
+    `"SimGNN: A Neural Network Approach to Fast Graph Similarity Computation"
     <https://arxiv.org/pdf/1808.05689.pdf>`_ paper
 
     TODO: Include latex formula for NTN interaction score computation
@@ -46,7 +46,6 @@ class NeuralTensorNetwork(torch.nn.Module):
         Returns:
             scores: (K, 1) graph-graph interaction score vector
         """
-        import ipdb; ipdb.set_trace()
         scores = torch.matmul(h_i, self.weight_tensor)
         scores = torch.matmul(scores, torch.t(h_j)).squeeze(-1)
         scores += torch.matmul(self.weight_matrix, torch.t(torch.cat([h_i, h_j], dim=-1)))

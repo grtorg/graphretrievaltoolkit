@@ -1,10 +1,7 @@
-==============
-Graph Matching
-==============
+# Graph Matching
 
---------------
-Models Used
---------------
+## Models Used
+
 1. SimGNN:
    - Encoder: 
      - Inputs: Initial one-hot encoded node embedding matrix $U \in R^{NXD}$
