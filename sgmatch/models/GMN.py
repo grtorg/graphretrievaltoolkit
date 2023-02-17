@@ -230,7 +230,7 @@ class GMNMatch(torch.nn.Module):
             lin.reset_parameters()
         for lin in self.aggr_mlp:
             lin.reset_parameters()
-        self._aggregator.reset_parameters()
+        self._aggregator.reset_parameters() 
 
     def forward(self, node_features_i: Tensor, node_features_j: Tensor, edge_index_i: Tensor, 
                 edge_features_i: Optional[Tensor] = None, num_prop: int = 10):
