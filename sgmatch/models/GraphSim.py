@@ -71,11 +71,14 @@ class GraphSim(nn.Module):
         # GCN Layers 
         self.gnn_layers = setup_conv_layers(self.input_dim, self.gnn_type, filters=self.gnn_filters)
 
-        # Fully Connected Layer - defined in the forward method
+        # Fully Connected Layer
         W = torch.randn(2, 1, self.sim_mat_dim, self.sim_mat_dim) # Dummy Matrix
         W = self.conv_filters(W).view(2,-1)
         self.mlp = setup_LRL_nn(input_dim=W.shape[1], hidden_sizes=self.mlp_neurons, activation=self.mlp_activation)
         del W
+
+        # Scoring Layer to get the final Graph Similarity between (0,1)
+        self.scoring_layer = setup_linear_nn(input_dim=self.mlp_neurons[-1], hidden_sizes=[1,])
 
     def reset_parameters(self):
         for gnn_layer in self.gnn_layers:
@@ -128,8 +131,8 @@ class GraphSim(nn.Module):
                 pads_i, pads_j = N_i_j - N_max_batch_i, N_i_j - N_max_batch_j
                 repadded_sim_matrices = list(map(lambda x, pad_i, pad_j: F.pad(x,(0,pad_i,0,pad_j)), 
                                                 list(sim_matrix), pads_i, pads_j))
-                resized_sim_matrices = list(map(lambda x: F.interpolate(x.unsqueeze(0), size=self.sim_mat_dim, mode=self.resize_mode), 
-                                            repadded_sim_matrices))
+                resized_sim_matrices = list(map(lambda x: F.interpolate(x.unsqueeze(0), size=self.sim_mat_dim,
+                                                                        mode=self.resize_mode).squeeze(0), repadded_sim_matrices))
                 batched_resized_sim_matrices = torch.stack(resized_sim_matrices)
             else:
                 batched_resized_sim_matrices = F.interpolate(sim_matrix, size=self.sim_mat_dim, mode=self.resize_mode)
@@ -140,12 +143,13 @@ class GraphSim(nn.Module):
         # sim_matrix_batch = torch.stack(sim_matrix_list, dim=-1) # (B, N_reduced, N_reduced, N_gnn_layers)
         # XXX: Can we use Group Convolutions instead of Looping over Convolved Multi-Scale Sim Matrices
         #sim_matrix_img_batch = sim_matrix_batch.permute(0,3,1,2)
-        image_embedding_list = list(map(lambda x: self.conv_filters(x.unsqueeze(0)).squeeze(0), sim_matrix_list)) # [(C,H,W),]
+        image_embedding_list = list(map(lambda x, conv_layer: conv_layer(x.unsqueeze(0)).squeeze(0), 
+                                        sim_matrix_list, self.conv_filters)) # [(C,H,W),]
         similarity_scores = torch.stack(image_embedding_list).view(B,-1) # (B, C*H*W)
 
         # Passing Input to MLP
-        self.mlp = setup_LRL_nn(input_dim=similarity_scores.shape[1], hidden_sizes=self.mlp_neurons)
         similarity_scores = self.mlp(similarity_scores)
+        similarity_scores = self.scoring_layer(similarity_scores)
         similarity_scores = torch.nn.Sigmoid(similarity_scores)
         
         return similarity_scores.view(-1)
