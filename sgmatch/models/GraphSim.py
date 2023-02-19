@@ -3,7 +3,7 @@ from typing import List, Optional
 import torch
 import torch.nn.functional as F
 from torch.functional import Tensor
-from torch.nn import Linear, Dropout, Sequential
+from torch.nn import Linear, Dropout, Sequential, ModuleList
 from torch.nn.utils.rnn import pad_sequence
 from torch_geometric.utils import to_dense_batch, unbatch, degree
 from torch_scatter import scatter_mean, scatter_add
@@ -42,9 +42,9 @@ class GraphSim(nn.Module):
         mlp_activation (str, optional): (default: :obj:`relu`)
         activation_slope (int, optional): (default: :obj:`0.1`)
     """
-    def __init__(self, input_dim: int, gnn: str = "GCN", gnn_filters: List[int] = [64, 32, 16], conv_filters: Sequential = None, 
+    def __init__(self, input_dim: int, gnn: str = "GCN", gnn_filters: List[int] = [64, 32, 16], conv_filters: ModuleList = None, 
                  mlp_neurons: List[int] = [32,16,8,4,1], padding_correction: bool = True, resize_dim: int = 10, 
-                 resize_mode = "bilinear", gnn_activation: str = "relu", mlp_activation: str = "relu", gnn_dropout_p = 0.5,
+                 resize_mode = "bilinear", gnn_activation: str = "relu", mlp_activation: str = "relu", gnn_dropout_p: float = 0.5,
                  activation_slope: Optional[float] = 0.1):
         super(GraphSim, self).__init__()
         # GNN Arguments
