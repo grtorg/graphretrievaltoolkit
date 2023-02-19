@@ -2,7 +2,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--root_dir', type=str, default="../")
+parser.add_argument('--root_dir', type=str, default="./")
 
 parser.add_argument('--train_batch_size', type=int, default=128)
 

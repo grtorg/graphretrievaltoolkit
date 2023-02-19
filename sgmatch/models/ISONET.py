@@ -1,16 +1,16 @@
-from typing import List, int, Optional, Dict
+from typing import List, Optional, Dict
 import torch
-from torch import nn
 from torch.functional import Tensor
 from torch_geometric.utils import to_dense_adj
 
 from ..modules.encoder import MLPEncoder
 from ..modules.scoring import GumbelSinkhornNetwork
 from ..modules.propagation import GraphProp
-from ..utils.utility import setup_linear_nn, setup_LRL_nn
+from ..utils.utility import setup_LRL_nn
 
-class ISONET(nn.Module):
-    r"""End-to-End implementation of the ISONET model from the - `"Interpretable Neural Subgraph Matching for Graph Retrieval" 
+class ISONET(torch.nn.Module):
+    r"""End-to-End implementation of the ISONET model from the
+    `"Interpretable Neural Subgraph Matching for Graph Retrieval" 
     <https://ojs.aaai.org/index.php/AAAI/article/view/20784>`_ paper.
     TODO: Add argument description
     """
@@ -124,7 +124,7 @@ class ISONET(nn.Module):
                                                                     edge_features_c_batched_lrl.permute(0,2,1)))
 
         # Calculating the Distance between corpus and query graph using the Soft Permutation Matrix
-        d_cq = nn.ReLU(edge_features_q_batched - torch.matmul(soft_permutation_matrix, edge_features_c_batched))
+        d_cq = torch.nn.ReLU(edge_features_q_batched - torch.matmul(soft_permutation_matrix, edge_features_c_batched))
         d_cq = torch.sum(d_cq, dim=(1,2))
         return d_cq
 

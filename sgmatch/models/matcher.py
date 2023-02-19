@@ -2,11 +2,11 @@ from typing import Type
 from sgmatch.utils.utility import Namespace
 
 # Importing Graph Similarity Models
-from NeuroMatch import SkipLastGNN
-from SimGNN import SimGNN
-from GMN import GMNEmbed, GMNMatch
+from .NeuroMatch import SkipLastGNN
+from .SimGNN import SimGNN
+from .GMN import GMNEmbed, GMNMatch
 #from GraphSim import GraphSim
-from ISONET import ISONET
+from .ISONET import ISONET
 
 class graphMatcher():
     """

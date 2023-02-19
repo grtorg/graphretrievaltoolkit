@@ -14,9 +14,9 @@ from .attention import CrossGraphAttention
 
 class GraphProp(torch.nn.Module):
     r"""
-    Implementation of the message-propagation module from the `"Graph 
-    Matching Networks for Learning the Similarity of Graph Structured 
-    Objects" https://arxiv.org/pdf/1904.12787.pdf`_ paper.
+    Implementation of the message-propagation module from the 
+    `"Graph Matching Networks for Learning the Similarity of Graph Structured Objects" 
+    https://arxiv.org/pdf/1904.12787.pdf`_ paper.
 
     .. math::
 

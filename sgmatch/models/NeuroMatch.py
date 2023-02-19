@@ -4,8 +4,8 @@ import torch
 import torch_geometric.nn as pyg_nn
 from torch.functional import Tensor
 
-from utils.utility import setup_LRL_nn
-from utils.constants import CONVS
+from ..utils.utility import setup_LRL_nn
+from ..utils.constants import CONVS
 
 class SkipLastGNN(torch.nn.Module):
     r"""

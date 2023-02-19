@@ -37,37 +37,37 @@ def load_dataset(dpath: str, name: str, category: Optional[str] = None, train: O
     # fname = osp.join(dpath, name + ".pkl")
     # if os.path.isfile(fname):
     #     d = pickle.load(open(fname,"rb"))
-    else:
-        if name == "pascal_voc":
-            from torch_geometric.datasets import PascalVOCKeypoints
-            from torch_geometric.transforms import Delaunay
+    
+    if name == "pascal_voc":
+        from torch_geometric.datasets import PascalVOCKeypoints
+        from torch_geometric.transforms import Delaunay
 
-            transform = Compose([Delaunay(), Face2Edge()])
-            assert category is not None, "Need to specify category for PascalVOCKeypoints"
-            assert train is not None and isinstance(train, bool), "train parameter needs to be True or False"
-            
-            d = PascalVOCKeypoints(root=dpath, category=category, train=train, transform=transform)
-        elif name == "citation_full":
-            from torch_geometric.datasets import CitationFull
-            assert category in ["Cora", "Cora_ML", "CiteSeer", "DBLP", "PubMed"], "Category should be one of ['Cora', 'Cora_ML' 'CiteSeer', 'DBLP', 'PubMed']"
-            
-            d = CitationFull(root=dpath, name=category)
-        elif name == "TUDataset":
-            from torch_geometric.datasets import TUDataset
+        transform = Compose([Delaunay(), Face2Edge()])
+        assert category is not None, "Need to specify category for PascalVOCKeypoints"
+        assert train is not None and isinstance(train, bool), "train parameter needs to be True or False"
+        
+        d = PascalVOCKeypoints(root=dpath, category=category, train=train, transform=transform)
+    elif name == "citation_full":
+        from torch_geometric.datasets import CitationFull
+        assert category in ["Cora", "Cora_ML", "CiteSeer", "DBLP", "PubMed"], "Category should be one of ['Cora', 'Cora_ML' 'CiteSeer', 'DBLP', 'PubMed']"
+        
+        d = CitationFull(root=dpath, name=category)
+    elif name == "TUDataset":
+        from torch_geometric.datasets import TUDataset
 
-            d = TUDataset(root=dpath, name='ENZYMES')
-        elif name == "Planetoid":
-            from torch_geometric.datasets import Planetoid
-            assert category in ["Cora", "CiteSeer", "PubMed"], "Category should be one of ['Cora', 'CiteSeer', 'PubMed']"
+        d = TUDataset(root=dpath, name='ENZYMES')
+    elif name == "Planetoid":
+        from torch_geometric.datasets import Planetoid
+        assert category in ["Cora", "CiteSeer", "PubMed"], "Category should be one of ['Cora', 'CiteSeer', 'PubMed']"
 
-            d = Planetoid(root=dpath, name=category)
-        elif name == "GED":
-            from torch_geometric.datasets import GEDDataset
-            assert train is not None and isinstance(train, bool), "train parameter needs to be True or False"
-            assert category in ["AIDS700nef", "LINUX", "ALKANE", "IMDBMulti"]
-            d = GEDDataset(root=dpath, name=category, train=train)
-        # with open(fname,"wb") as f:
-        #     pickle.dump(d,f)
+        d = Planetoid(root=dpath, name=category)
+    elif name == "GED":
+        from torch_geometric.datasets import GEDDataset
+        assert train is not None and isinstance(train, bool), "train parameter needs to be True or False"
+        assert category in ["AIDS700nef", "LINUX", "ALKANE", "IMDBMulti"]
+        d = GEDDataset(root=dpath, name=category, train=train)
+    # with open(fname,"wb") as f:
+    #     pickle.dump(d,f)
     assert d is not None
     
     return d

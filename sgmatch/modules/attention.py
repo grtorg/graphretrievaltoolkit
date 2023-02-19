@@ -60,7 +60,7 @@ class GlobalContextAttention(torch.nn.Module):
             representation (torch.Tensor): Global graph representation for input node 
             representation set.
         """
-        if x.shape[1] != self.input_dim:
+        if x.shape[-1] != self.input_dim:
             raise RuntimeError("dim 1 of input tensor does not match dimension of weight matrix")
         # XXX: Have these dicts stored in separate files?
         activations = {"tanh": torch.tanh, "leaky_relu": torch.nn.functional.leaky_relu,
@@ -69,15 +69,15 @@ class GlobalContextAttention(torch.nn.Module):
             raise ValueError(f"Invalid activation function specified: {self.activation}")
 
         # Generating the global context vector
-        global_context = torch.mean(torch.matmul(x, self.weight_matrix), dim = 0)
+        global_context = torch.mean(torch.matmul(x, self.weight_matrix), dim = -2)
 
         # Applying the Non-Linearity over global context vector
         _activation = ACTIVATIONS[self.activation]
         global_context = _activation(global_context)
 
         # Computing attention weights and att-weight-aggregating node embeddings
-        att_weights = torch.sigmoid(torch.matmul(x, global_context.view(-1, 1)))
-        representation = torch.sum(x * att_weights, dim = 0)
+        att_weights = torch.sigmoid(torch.matmul(x, global_context.unsqueeze(-1)))
+        representation = torch.sum(x * att_weights, dim = -2)
         
         return representation
     

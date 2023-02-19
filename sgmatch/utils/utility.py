@@ -1,9 +1,9 @@
 from typing import List
 
 import torch
+from torch_geometric.data import Data
 
 from .constants import CONVS, ACTIVATION_LAYERS
-# from torch import cuda
 
 class Namespace():
     def __init__(self, **kwargs):
@@ -48,7 +48,7 @@ class Namespace():
                              dropout   = 0.0,
                              skip      = 'learnable')
 
-class GraphPair(torch_geometric.data.Data):
+class GraphPair(Data):
     """ 
     :param: edge_index_1 : Edge Index of the First Graph
     :param: edge_index_2 : Edge Index of the Second Graph in the pair

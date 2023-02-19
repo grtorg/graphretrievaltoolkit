@@ -46,9 +46,9 @@ class NeuralTensorNetwork(torch.nn.Module):
         Returns:
             scores: (K, 1) graph-graph interaction score vector
         """
-        scores = torch.matmul(h_i, self.weight_tensor)
-        scores = torch.matmul(scores, torch.t(h_j)).squeeze(-1)
-        scores += torch.matmul(self.weight_matrix, torch.t(torch.cat([h_i, h_j], dim=-1)))
+        scores = torch.matmul(h_i.unsqueeze(-2).unsqueeze(-2), self.weight_tensor)
+        scores = torch.matmul(scores, h_j.unsqueeze(-2).unsqueeze(-1)).squeeze(-1)
+        scores += torch.matmul(self.weight_matrix, torch.cat([h_i, h_j], dim=-1).unsqueeze(-1))
         scores += self.bias
         
         # TODO: need to remove this from here and include it in a function in utils

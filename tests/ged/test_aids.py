@@ -1,4 +1,3 @@
-# import tqdm
 from typing import List, Tuple
 import tqdm
 import os
@@ -30,7 +29,7 @@ def create_graph_pairs(train_dataset, test_dataset) -> Tuple[List]:
                 x_t = graph2.x
 
                 norm_ged = train_dataset.norm_ged[graph1.i, graph2.i]
-                graph_sim = torch.exp(-norm_ged)
+                graph_sim = torch.exp(-norm_ged).unsqueeze(-1)
                 
                 # Making Graph Pair
                 if isinstance(x_s, Tensor) and isinstance(x_t, Tensor):
@@ -43,7 +42,7 @@ def create_graph_pairs(train_dataset, test_dataset) -> Tuple[List]:
             bar.update(len(train_dataset))
     
     test_graph_pairs = []
-    with tqdm.tqdm(total=len(test_dataset)*len(train_dataset), desc='Train graph pairs completed: ') as bar:
+    with tqdm.tqdm(total=len(test_dataset)*len(train_dataset), desc='Test graph pairs completed: ') as bar:
         for graph1 in test_dataset:
             for graph2 in train_dataset:
                 # Initializing Data
@@ -53,7 +52,7 @@ def create_graph_pairs(train_dataset, test_dataset) -> Tuple[List]:
                 x_t = graph2.x
 
                 norm_ged = train_dataset.norm_ged[graph1.i, graph2.i]
-                graph_sim = torch.exp(-norm_ged)
+                graph_sim = torch.exp(-norm_ged).unsqueeze(-1)
                 
                 # Making Graph Pair
                 if isinstance(x_s, Tensor) and isinstance(x_t, Tensor):
@@ -68,49 +67,54 @@ def create_graph_pairs(train_dataset, test_dataset) -> Tuple[List]:
     return train_graph_pairs, test_graph_pairs
 
 def train(train_loader, val_loader, model, loss_criterion, optimizer, device, num_epochs=10):
-    train_losses = []
-    val_losses = []
+    batch_train_loss_sum = 0
+    batch_val_loss_sum = 0
 
     for epoch in range(num_epochs):
-        for batch_idx, train_batch in enumerate(train_loader):
-            # print(train_batch.num_nodes)
-            model.train()
-            # # Fake node mask returned here if needed
-            # x_s, _ = to_dense_batch(train_batch.x_s, train_batch.x_s_batch)
-            # x_t, _ = to_dense_batch(train_batch.x_t, train_batch.x_t_batch)
-            # x_s, x_t = x_s.to(device), x_t.to(device)
-            train_batch = train_batch.to(device)
-            optimizer.zero_grad()
+        with tqdm.tqdm(total=len(train_loader), desc='Train batches completed: ') as bar:
+            for batch_idx, train_batch in enumerate(train_loader):
+                model.train()
+                train_batch = train_batch.to(device)
+                optimizer.zero_grad()
 
-            pred_sim = model(train_batch.x_s, train_batch.edge_index_s, train_batch.x_t, train_batch.edge_index_t)
-            loss = loss_criterion(pred_sim, train_batch.graph_sim)
-            # Compute Gradients via Backpropagation
-            loss.backward()
-            # Update Parameters
-            optimizer.step()
-            train_losses.append(loss.item())
+                pred_sim = model(train_batch.x_s, train_batch.edge_index_s, train_batch.x_t, 
+                                train_batch.edge_index_t, train_batch.x_s_batch, train_batch.x_t_batch)
+                mean_batch_loss = loss_criterion(pred_sim, train_batch.y)
+                # Compute Gradients via Backpropagation
+                mean_batch_loss.backward()
+                # Update Parameters
+                optimizer.step()
+                batch_train_loss_sum += mean_batch_loss.item()*len(train_batch)
+                
+                bar.update(1)
 
-        for batch_idx, val_batch in enumerate(val_loader):
-            model.eval()
-            with torch.no_grad():
-                val_batch = val_batch.to(device)
-                pred_sim = model(val_batch.x_s, val_batch.edge_index_s, 
-                           val_batch.x_t, val_batch.edge_index_t)
-                val_loss = loss_criterion(pred_sim, val_batch.graph_sim)
-                val_losses.append(val_loss.item())
+        with tqdm.tqdm(total=len(val_loader), desc='Validation batches completed: ') as bar:
+            for batch_idx, val_batch in enumerate(val_loader):
+                model.eval()
+                with torch.no_grad():
+                    val_batch = val_batch.to(device)
+                    pred_sim = model(val_batch.x_s, val_batch.edge_index_s, 
+                            val_batch.x_t, val_batch.edge_index_t, val_batch.x_s_batch, val_batch.x_t_batch)
+                    mean_val_loss = loss_criterion(pred_sim, val_batch.y)
+                    batch_val_loss_sum += mean_val_loss.item()*len(val_batch)
+
+                bar.update(1)
         
         if torch.cuda.is_available():
             torch.cuda.empty_cache() 
     
         # Printing Epoch Summary
-        print(f"Epoch: {epoch+1}/{num_epochs} | Train MSE: {loss} | Validation MSE: {val_loss}")
+        print(f"Epoch: {epoch+1}/{num_epochs} | Per Graph Train MSE: {batch_train_loss_sum / len(train_loader.dataset)} | Per Graph Validation MSE: {batch_val_loss_sum / len(val_loader.dataset)}")
 
 if __name__ == "__main__":
+    # Run this from root folder
+    # python -m tests.ged.test_aids --data_path <path_to_data_folder> --create_graph_pairs
+
     args = parser.parse_args()
     device = 'cuda:0' if torch.cuda.is_available() and args.cuda else 'cpu'
 
-    train_dataset = load_dataset(dpath=args.root_dir, name="GED", category="AIDS700nef", train=True)
-    test_dataset = load_dataset(dpath=args.root_dir, name="GED", category="AIDS700nef", train=False)
+    train_dataset = load_dataset(dpath=args.data_path+"/aids/", name="GED", category="AIDS700nef", train=True)
+    test_dataset = load_dataset(dpath=args.data_path+"/aids/", name="GED", category="AIDS700nef", train=False)
 
     train_ged_table = train_dataset.ged[:train_dataset.data.i[-1]+1, :train_dataset.data.i[-1]+1]
     test_ged_table = test_dataset.ged[train_dataset.data.i[-1]+1:, train_dataset.data.i[-1]+1:]

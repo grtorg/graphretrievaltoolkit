@@ -5,6 +5,7 @@ from torch.functional import Tensor
 from torch.nn.utils.rnn import pad_sequence
 import torch.nn.functional
 from torch_geometric.nn.conv import GCNConv, SAGEConv, GATConv
+from torch_geometric.utils import to_dense_batch
 
 from ..modules.attention import GlobalContextAttention
 from ..modules.scoring import NeuralTensorNetwork
@@ -94,6 +95,7 @@ class SimGNN(torch.nn.Module):
         self.scoring_layer.reset_parameters()
         
     def forward(self, x_i: Tensor, edge_index_i: Tensor, x_j: Tensor, edge_index_j: Tensor,
+                src_batch_idx: Tensor = Optional[None], tgt_batch_idx: Tensor = Optional[None], 
                 conv_dropout: int = 0):
         # Strategy One: Graph-Level Embedding Interaction
         for filter_idx, conv in enumerate(self.convs):
@@ -107,6 +109,9 @@ class SimGNN(torch.nn.Module):
             x_j = torch.nn.functional.relu(x_j)
             x_j = torch.nn.functional.dropout(x_j, p = conv_dropout, training = self.training)
 
+        x_i, _ = to_dense_batch(x_i, batch=src_batch_idx)
+        x_j, _ = to_dense_batch(x_j, batch=tgt_batch_idx)
+
         h_i = self.attention_layer(x_i)
         h_j = self.attention_layer(x_j)
 
@@ -114,7 +119,7 @@ class SimGNN(torch.nn.Module):
         
         # Strategy Two: Pairwise Node Comparison
         if self.include_histogram:
-            sim_matrix = torch.matmul(h_i, h_j.transpose(-1,-2)).detach()
+            sim_matrix = torch.matmul(x_i, x_j.transpose(-1,-2)).detach()
             sim_matrix = torch.sigmoid(sim_matrix)
             # XXX: is this if statement necessary? Can writing the histogram operation as a single 
             # tensor operation not accomodate batching?
@@ -126,7 +131,7 @@ class SimGNN(torch.nn.Module):
                 hist = torch.histc(scores, bins = self.hist_bins)
             # TODO: Normalise histogram features
             hist = hist.unsqueeze(-1)
-            interaction = torch.cat((interaction, hist), dim = -2)
+            interaction = torch.cat((interaction, hist), dim = -2).squeeze(-1)
         
         # Final interaction score prediction
         for _, lin in enumerate(self.mlp):
