@@ -44,13 +44,17 @@ class GraphSim(nn.Module):
     """
     def __init__(self, input_dim: int, gnn: str = "GCN", gnn_filters: List[int] = [64, 32, 16], conv_filters: Sequential = None, 
                  mlp_neurons: List[int] = [32,16,8,4,1], padding_correction: bool = True, resize_dim: int = 10, 
-                 resize_mode = "bilinear", gnn_activation: str = "relu", mlp_activation: str = "relu", 
+                 resize_mode = "bilinear", gnn_activation: str = "relu", mlp_activation: str = "relu", gnn_dropout_p = 0.5,
                  activation_slope: Optional[float] = 0.1):
         super(GraphSim, self).__init__()
+        # GNN Arguments
         self.input_dim = input_dim
         self.gnn_type = gnn
         self.gnn_filters = gnn_filters
         self.gnn_activation = gnn_activation
+        self.gnn_dropout_p = gnn_dropout_p
+        
+        # Similarity Matrix Arguments
         self.padding_correction = padding_correction
         self.sim_mat_dim = resize_dim
         self.resize_mode = resize_mode
@@ -115,9 +119,9 @@ class GraphSim(nn.Module):
 
             if layer_num != len(self.gnn_layers)-1:
                 x_i = gnn_activation(x_i) # Default is a ReLU activation
-                x_i = Dropout(x_i, p=self.p, training=self.training)
+                x_i = Dropout(x_i, p=self.gnn_dropout_p, training=self.training)
                 x_j = gnn_activation(x_j)
-                x_j = Dropout(x_j, p=self.p, training=self.training)
+                x_j = Dropout(x_j, p=self.gnn_dropout_p, training=self.training)
 
             # Generate Similarity Matrix after (layer_num + 1)th GNN Embedding Pass
             h_i, mask_i = to_dense_batch(x_i, batch_i) # (B, N_max, D), {0,1}^(B, N_max) - 1 if true node, 0 if padded 
