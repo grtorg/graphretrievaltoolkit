@@ -10,7 +10,6 @@ __pycache__/
 
 # Code Files to Ignore
 test.ipynb
-sgmatch/models/GraphSim.py
 
 # Distribution / packaging
 .Python
