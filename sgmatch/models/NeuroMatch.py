@@ -3,12 +3,23 @@ from typing import Optional, List
 import torch
 import torch_geometric.nn as pyg_nn
 from torch.functional import Tensor
-
 from ..utils.utility import setup_LRL_nn
 from ..utils.constants import CONVS
 
 class SkipLastGNN(torch.nn.Module):
     r"""
+    End to end implementation of NeuroMatch from the `"Neural Subgraph Matching" <https://arxiv.org/abs/2007.03092>`_ paper
+
+    TODO: Provide argument description
+
+    Args:
+        input_dim (int): Input dimension of node feature vectors.
+        hidden_dim (int): Dimension of 
+        output_dim (int): Input dimension of node feature vectors.
+        num_layers (int):
+        conv_type (str, optional):
+        dropout (float, optional):
+        skip (str, optional):
     """
     def __init__(self, input_dim: int, hidden_dim: int, output_dim: int, 
                 num_layers: int, conv_type: str = "SAGEConv", dropout: float = 0.0,

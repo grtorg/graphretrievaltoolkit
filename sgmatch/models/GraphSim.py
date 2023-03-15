@@ -11,37 +11,37 @@ from torch_scatter import scatter_mean, scatter_add
 from ..utils.utility import setup_linear_nn, setup_conv_layers, setup_LRL_nn
 from ..utils.constants import ACTIVATION_LAYERS, ACTIVATIONS
 
-class GraphSim(nn.Module):
+class GraphSim(torch.nn.Module):
     r"""
     End to end implementation of GraphSim from the `"Learning-based Efficient Graph Similarity Computation via Multi-Scale
-    Convolutional Set Matching" <https://arxiv.org/pdf/1809.04440.pdf>`_ paper.
+    Convolutional Set Matching" <https://arxiv.org/abs/1809.04440>`_ paper.
     
     TODO: Provide description of implementation and differences from paper if any and update argument description
 
     Args:
-        input_dim (int): Input dimension of node feature embedding vectors
-        gnn (str): Number of filters per convolutional layer in the graph 
-            convolutional encoder model. (default: :obj:`[64, 32, 16]`)
-        gnn_filters ([int]): Number of hidden neurons in each linear layer of 
+        input_dim (int): Input dimension of node feature vectors.
+        gnn (str, optional): Type of Graph Neural Network to use to embed the node features.
+            (default: :obj:`'GCN'`)
+        gnn_filters ([int], optional): Number of hidden neurons in each linear layer of
             MLP for reducing dimensionality of concatenated output of neural 
             tensor network and histogram features. Note that the final scoring 
             weight tensor of size :obj:`[mlp_neurons[-1], 1]` is kept separate
             from the MLP, therefore specifying only the hidden layer sizes will
             suffice. (default: :obj:`[32,16,8,4]`)
-        conv_filters (int): Hyperparameter controlling the number of bins in the node 
+        conv_filters (int, optional): Hyperparameter controlling the number of bins in the node 
             ordering histogram scheme. (default: :obj:`16`)
-        mlp_neurons ([int]): Type of graph convolutional architecture to be used for encoding
+        mlp_neurons ([int], optional): Type of graph convolutional architecture to be used for encoding
             (:obj:`'GCN'` or :obj:`'SAGE'` or :obj:`'GAT'`) (default: :obj:`'GCN'`)
-        padding_correction (bool): Type of activation used in Attention and NTN modules. 
+        padding_correction (bool, optional): Type of activation used in Attention and NTN modules. 
             (:obj:`'sigmoid'` or :obj:`'relu'` or :obj:`'leaky_relu'` or :obj:`'tanh'`) 
             (default: :obj:`'tanh`)
-        resize_dim (int): Slope of function for leaky_relu activation. 
-            (default: :obj:`None`)
-        resize_mode (str, optional):
+        resize_dim (int, optional): Slope of function for leaky_relu activation. 
+        (default: :obj:`10`)
+        resize_mode (str, optional): Interpolation method to resize the similarity images (default: :obj:`'bilinear'`)
         gnn_activation (str, optional): (default: :obj:`relu`)
         mlp_activation (str, optional): (default: :obj:`relu`)
         activation_slope (int, optional): (default: :obj:`0.1`)
-    """
+    """ 
     def __init__(self, input_dim: int, gnn: str = "GCN", gnn_filters: List[int] = [64, 32, 16], conv_filters: ModuleList = None, 
                  mlp_neurons: List[int] = [32,16,8,4,1], padding_correction: bool = True, resize_dim: int = 10, 
                  resize_mode = "bilinear", gnn_activation: str = "relu", mlp_activation: str = "relu", gnn_dropout_p: float = 0.5,

@@ -15,8 +15,6 @@ class GMNEmbed(torch.nn.Module):
     End to end implementation of Graph Matching Networks - Embed from the `"Graph Matching Networks for Learning the Similarity
     of Graph Structured Objects" <https://arxiv.org/abs/1904.12787>`_ paper.
     
-    TODO: Provide description of implementation and differences from paper if any
-
     Args:
         node_feature_dim (int): Input dimension of node feature embedding vectors
         enc_node_hidden_sizes ([int]): Hyperparameter for the number of tensor slices in the

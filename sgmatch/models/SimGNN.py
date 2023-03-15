@@ -9,39 +9,38 @@ from torch_geometric.utils import to_dense_batch
 
 from ..modules.attention import GlobalContextAttention
 from ..modules.scoring import NeuralTensorNetwork
-from ..utils.utility import setup_linear_nn, setup_conv_layers, Namespace
+from ..utils.utility import setup_linear_nn, setup_conv_layers
 
 class SimGNN(torch.nn.Module):
     r"""
     End to end implementation of SimGNN from the `"SimGNN: A Neural Network Approach
-    to Fast Graph Similarity Computation" <https://arxiv.org/pdf/1808.05689.pdf>`_ paper.
+    to Fast Graph Similarity Computation" <https://arxiv.org/abs/1808.05689>`_ paper
     
     TODO: Provide description of implementation and differences from paper if any
 
     Args:
-        input_dim (int): Input dimension of node feature embedding vectors
-        ntn_slices (int): Hyperparameter for the number of tensor slices in the
-            Neural Tensor Network. In this domain, it denotes the number of interaction 
-            (similarity) scores produced by the model for each graph embedding pair.
-        filters ([int]): Number of filters per convolutional layer in the graph 
+        input_dim (int): Input dimension of node feature embedding vectors. 
+        ntn_slices (int, optional): Hyperparameter for the number of tensor slices in the
+            Neural Tensor Network. In this domain, it denotes the number of interaction (similarity) scores 
+            produced by the model for each graph embedding pair. 
+        filters ([int], optional): Number of filters per convolutional layer in the graph
             convolutional encoder model. (default: :obj:`[64, 32, 16]`)
-        mlp_neurons ([int]): Number of hidden neurons in each linear layer of 
-            MLP for reducing dimensionality of concatenated output of neural 
-            tensor network and histogram features. Note that the final scoring 
-            weight tensor of size :obj:`[mlp_neurons[-1], 1]` is kept separate
-            from the MLP, therefore specifying only the hidden layer sizes will
-            suffice. (default: :obj:`[32,16,8,4]`)
-        hist_bins (int): Hyperparameter controlling the number of bins in the node 
-            ordering histogram scheme. (default: :obj:`16`)
-        conv (str): Type of graph convolutional architecture to be used for encoding
+        mlp_neurons ([int], optional): Number of hidden neurons in each linear layer of MLP for reducing
+            dimensionality of concatenated output of neural tensor network and histogram features
+            Note that the final scoring weight tensor of size :obj:`[mlp_neurons[-1], 1]` is kept 
+            separate from the MLP, therefore specifying only the hidden layer sizes will suffice.
+            (default: :obj:`[32,16,8,4]`)
+        hist_bins (int, optional): Hyperparameter controlling the number of bins in the node ordering histogram scheme.
+            (default: :obj:`16`)
+        conv (str, optional): Type of graph convolutional architecture to be used for encoding
             (:obj:`'GCN'` or :obj:`'SAGE'` or :obj:`'GAT'`) (default: :obj:`'GCN'`)
-        activation (str): Type of activation used in Attention and NTN modules. 
+        activation (str, optional): Type of activation used in Attention and NTN modules. 
             (:obj:`'sigmoid'` or :obj:`'relu'` or :obj:`'leaky_relu'` or :obj:`'tanh'`) 
             (default: :obj:`'tanh`)
-        activation_slope (float, Optional): Slope of function for leaky_relu activation. 
+        activation_slope (float, optional): Slope of function for leaky_relu activation.
             (default: :obj:`None`)
-        include_histogram (bool): Flag for including Strategy Two: Nodewise comparison
-            from SimGNN. (default: :obj:`True`)
+        include_histogram (bool, optional): Flag for including Strategy Two: Nodewise comparison from SimGNN.
+            (default: :obj:`True`)
     """
     def __init__(self, input_dim: int, ntn_slices: int = 16, filters: list = [64, 32, 16],
                  mlp_neurons: List[int] = [32,16,8,4], hist_bins: int = 16, conv: str = "GCN", 
@@ -85,7 +84,7 @@ class SimGNN(torch.nn.Module):
         self.mlp = setup_linear_nn(self._in, self.mlp_neurons)
         self.scoring_layer = torch.nn.Linear(self.mlp_neurons[-1], 1)
 
-    def reset_parameters(self):
+    def reset_parameters (self):
         for conv in self.convs:
             conv.reset_parameters()
         self.attention_layer.reset_parameters()
@@ -94,7 +93,7 @@ class SimGNN(torch.nn.Module):
             lin.reset_parameters()
         self.scoring_layer.reset_parameters()
         
-    def forward(self, x_i: Tensor, edge_index_i: Tensor, x_j: Tensor, edge_index_j: Tensor,
+    def forward (self, x_i: Tensor, edge_index_i: Tensor, x_j: Tensor, edge_index_j: Tensor,
                 src_batch_idx: Tensor = Optional[None], tgt_batch_idx: Tensor = Optional[None], 
                 conv_dropout: int = 0):
         # Strategy One: Graph-Level Embedding Interaction

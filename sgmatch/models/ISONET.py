@@ -9,8 +9,8 @@ from ..modules.propagation import GraphProp
 from ..utils.utility import setup_LRL_nn
 
 class ISONET(torch.nn.Module):
-    r"""End-to-End implementation of the ISONET model from the
-    `"Interpretable Neural Subgraph Matching for Graph Retrieval" 
+    r"""
+    End-to-End implementation of the ISONET model from the `"Interpretable Neural Subgraph Matching for Graph Retrieval" 
     <https://ojs.aaai.org/index.php/AAAI/article/view/20784>`_ paper.
     TODO: Add argument description
     """
