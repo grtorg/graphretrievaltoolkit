@@ -134,7 +134,8 @@ def train(train_loader, val_loader, model, loss_criterion, optimizer, device, nu
 r"""Also, we need to define a Namespace Class to send the arguments to our base graphMatcher class to initialize the
 SimGNN Model
 """
-av = Namespace(ntn_slices        = 16,
+av = Namespace(model_name        = "simgnn", 
+               ntn_slices        = 16,
                filters           = [64, 32, 16],
                mlp_neurons       = [32,16,8,4],
                hist_bins         = 16,
@@ -147,6 +148,6 @@ av = Namespace(ntn_slices        = 16,
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = graphMatcher(av).to(device)
 criterion = torch.nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), args.learning_rate)
+optimizer = torch.optim.Adam(model.parameters(), 0.01)
 
 train(train_loader, val_loader, model, criterion, optimizer, device)
