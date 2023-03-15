@@ -17,11 +17,11 @@ Contents
 
     installation
 
-.. .. toctree::
-..     :maxdepth: 1
-..     :caption: Models
+.. toctree::
+    :maxdepth: 1
+    :caption: Models
 
-..     models
+    models
 
 .. toctree::
     :maxdepth: 1

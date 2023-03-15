@@ -3,13 +3,15 @@
 import os.path as osp
 import sys
 
+# C:\Users\Kunind Sahu\Documents\graphretrievaltoolkit
+# ROOT_DIR = osp.abspath('../../')
 sys.path.insert(0, osp.abspath('../../'))
 
 # -- Project information
 
-project = 'GRT'
+project = 'Graph Retrieval Toolkit'
 # copyright = ''
-author = 'Sanidhya Anand'
+author = 'Kunind Sahu, Sanidhya Anand'
 
 # release = ''
 # version = ''
@@ -22,11 +24,16 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
 ]
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
     'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
+    'torch': ('https://pytorch.org/docs/master', None),
+    'pyg': ('https://pytorch-geometric.readthedocs.io/en/latest/', None),
 }
 intersphinx_disabled_domains = ['std']
 

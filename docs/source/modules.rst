@@ -5,20 +5,20 @@ Attention
 -------------------------
 .. autoclass:: sgmatch.modules.attention.GlobalContextAttention
 
+.. autoclass:: sgmatch.modules.attention.CrossGraphAttention
+
 .. autofunction:: sgmatch.modules.scoring.similarity
 
-.. .. autoclass:: sgmatch.modules.attention.CrossGraphAttention
+Encoding
+-------------------------
+.. autoclass:: sgmatch.modules.encoder.MLPEncoder
 
-.. Encoding
-.. -------------------------
-.. .. autoclass:: sgmatch.modules.encoder.MLPEncoder
+.. autoclass:: sgmatch.modules.encoder.OrderEmbedder
 
-.. .. autoclass:: sgmatch.modules.encoder.OrderEmbedder
+Propagation
+-------------------------
+.. autoclass:: sgmatch.modules.propagation.GraphProp
 
-.. Propagation
-.. -------------------------
-.. .. autoclass:: sgmatch.modules.propagation.GraphProp
-
-.. Scoring
-.. -------------------------
-.. .. autoclass:: sgmatch.modules.scoring.NeuralTensorNetwork
+Scoring
+-------------------------
+.. autoclass:: sgmatch.modules.scoring.NeuralTensorNetwork
