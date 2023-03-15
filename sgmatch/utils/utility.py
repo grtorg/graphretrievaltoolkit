@@ -6,16 +6,24 @@ from torch_geometric.data import Data
 from .constants import CONVS, ACTIVATION_LAYERS
 
 class Namespace():
-    def __init__(self, **kwargs):
+    def __init__(self, model_name: str, **kwargs):
+        self.model_name = model_name
         self.update_default_arguments()
         self.__dict__.update(kwargs)
 
     def update_default_args(self):
-        self.update_simgnn_default_args()
-        self.update_gmn_default_args()
-        self.update_graphsim_default_args()
-        self.update_isonet_default_args()
-        self.update_neuromatch_default_args()
+        if self.model_name == 'simgnn':
+            self.update_simgnn_default_args()
+        elif self.model_name == 'gmn_embed' or self.model_name == 'gmn_match':
+            self.update_gmn_default_args()
+        elif self.model_name == 'graphsim':
+            self.update_graphsim_default_args()
+        elif self.model_name == 'isonet':
+            self.update_isonet_default_args()
+        elif self.model_name == 'neuromatch':
+            self.update_neuromatch_default_args()
+        else:
+            raise NotImplementedError("The model name is incorrect, please use the correct model name")
 
     def update_simgnn_default_args(self):
         self.__dict__.update(ntn_slices        = 16,
