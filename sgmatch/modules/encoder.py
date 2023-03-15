@@ -10,7 +10,7 @@ class MLPEncoder(torch.nn.Module):
     r"""
     MLP node/edge feature encoding scheme following the 
     `"Graph Matching Networks for Learning the Similarity of Graph Structured Objects" 
-    https://arxiv.org/pdf/1904.12787.pdf`_ paper.
+    <https://arxiv.org/pdf/1904.12787.pdf>`_ paper.
 
     NOTE: This is a generic MLP Encoder for graph encoding rather 
     than something explicitly novel from the paper; it has been 

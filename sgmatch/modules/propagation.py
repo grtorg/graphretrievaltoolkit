@@ -14,9 +14,8 @@ from .attention import CrossGraphAttention
 
 class GraphProp(torch.nn.Module):
     r"""
-    Implementation of the message-propagation module from the 
-    `"Graph Matching Networks for Learning the Similarity of Graph Structured Objects" 
-    https://arxiv.org/pdf/1904.12787.pdf`_ paper.
+    Implementation of the message-propagation module from the `"Graph Matching Networks for 
+    Learning the Similarity of Graph Structured Objects" <https://arxiv.org/pdf/1904.12787.pdf`>_ paper.
 
     .. math::
 
@@ -46,6 +45,7 @@ class GraphProp(torch.nn.Module):
         prop_type (str): Propagation computation type (:obj:`"embedding"` or :obj:`"matching"`)
             (default: :obj:`"embedding"`)
     """
+
     def __init__(self, node_feature_dim: int, node_hidden_sizes: List[int], message_hidden_sizes: List[int], 
                 edge_feature_dim: Optional[int] = None, message_net_init_scale: float = 0.1, node_update_type: str = 'residual', 
                 use_reverse_direction: bool = False, reverse_dir_param_different: bool = True, layer_norm: bool = False, 

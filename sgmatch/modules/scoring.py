@@ -12,10 +12,9 @@ class NeuralTensorNetwork(torch.nn.Module):
     TODO: Include latex formula for NTN interaction score computation
     
     Args:
-        input_dim: Input dimension of the graph-level embeddings
-        slices: Number of slices (K) the weight tensor possesses. Often 
-        interpreted as the number of entity-pair (in this use case - pairwise
-        node) relations the data might possess.
+        input_dim: Input dimension of the graph-level embeddings slices. That is, number of slices (K) the weight tensor possesses. Often 
+            interpreted as the number of entity-pair (in this use case - pairwise
+            node) relations the data might possess.
         activation: Non-linearity applied on the computed output of the layer
     """
     def __init__(self, input_dim: int, slices: int = 16, activation: str = "tanh"):

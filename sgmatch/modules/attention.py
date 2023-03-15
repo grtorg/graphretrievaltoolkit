@@ -17,6 +17,7 @@ class GlobalContextAttention(torch.nn.Module):
         activation: The Activation Function to be used for the Attention Layer
         activation_slope: Slope of the -ve part if the activation is Leaky ReLU
     """
+    
     def __init__(self, input_dim: int, activation: str = "tanh", activation_slope: Optional[float] = None):
         super(GlobalContextAttention, self).__init__()
         self.input_dim = input_dim
@@ -88,7 +89,7 @@ class CrossGraphAttention(torch.nn.Module):
     r"""
     Attention mechanism layer for the cross-graph attention operator from the 
     `"Graph Matching Networks for Learning the Similarity of Graph Structured Objects" 
-    https://arxiv.org/pdf/1904.12787.pdf`_ paper
+    <https://arxiv.org/pdf/1904.12787.pdf>`_ paper
 
     TODO: Include latex formula for attention computation and aggregation update
 
