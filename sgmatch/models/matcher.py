@@ -12,7 +12,7 @@ class graphMatcher():
     A Wrapper Class for all the Graph Similarity / Matching models implemented in the library
     
     Args:
-        av (Namespace): Object of class 'Namespace' containing arguments to be passed to models
+        av (Namespace): Object of :class:`Namespace` containing arguments to be passed to models
     
     Returns:
         The initialized model selected by the user through the 'model_name' key in dict 'args'

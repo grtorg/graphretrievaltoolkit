@@ -17,12 +17,16 @@ class SkipLastGNN(torch.nn.Module):
         hidden_dim (int): Dimension of 
         output_dim (int): Input dimension of node feature vectors.
         num_layers (int):
-        conv_type (str, optional):
-        dropout (float, optional):
-        skip (str, optional):
+        conv_type (str, optional): Type of Graph Neural Network to encode input features (:obj:`"Neuro-PNA"` or 
+            :obj:`"PNA"` or :obj:`"GCN"` or :obj:`"GAT"`or :obj:`"SAGE"` or :obj:`"GIN"` or :obj:`"graph"` or :obj:`"gated"`).
+            (default: :obj:`"Neuro-PNA"`)
+        dropout (float, optional): Dropout probability to prevent overfitting
+            (default: :obj:`0.0`)
+        skip (str, optional): Type of skip
+            (default: :obj:`"learnable"`)
     """
     def __init__(self, input_dim: int, hidden_dim: int, output_dim: int, 
-                num_layers: int, conv_type: str = "SAGEConv", dropout: float = 0.0,
+                num_layers: int, conv_type: str = "Neuro-PNA", dropout: float = 0.0,
                 skip: str = "learnable"):
         super(SkipLastGNN, self).__init__()
         self.input_dim = input_dim

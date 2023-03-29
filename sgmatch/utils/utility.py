@@ -58,12 +58,18 @@ class Namespace():
 
 class GraphPair(Data):
     """ 
-    :param: edge_index_1 : Edge Index of the First Graph
-    :param: edge_index_2 : Edge Index of the Second Graph in the pair
-    :param: x_1 : Feature Matrix of the First Graph in the Pair
-    :param: x_2 : Feature Matrix of the Second Graph in the Pair
+    Args:
+        edge_index_s (torch.Tensor): Edge Index of the Source / Query Graph
+        edge_index_t (torch.Tensor): Edge Index of the Target / Corpus Graph
+        x_s (torch.Tensor): Feature Matrix of the Source / Query Graph
+        x_t (torch.Tensor): Feature Matrix of the Target / Corpus Graph
+
+    Shapes:
+        - **input:**
+         node features :math:`(|\mathcal{V}|, F_{in})`,
+         edge indices :math:`(2, |\mathcal{E}|)`,
        
-    :returns: torch_geometric.data.Data object which comprises two graphs
+    :rtype: :class:`torch_geometric.data.Data`
     """
     def __init__(self, edge_index_s, x_s, edge_index_t, x_t, ged, norm_ged, graph_sim):
         super().__init__()

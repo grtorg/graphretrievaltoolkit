@@ -12,7 +12,47 @@ class ISONET(torch.nn.Module):
     r"""
     End-to-End implementation of the ISONET model from the `"Interpretable Neural Subgraph Matching for Graph Retrieval" 
     <https://ojs.aaai.org/index.php/AAAI/article/view/20784>`_ paper.
-    TODO: Add argument description
+
+    Args:
+        node_feature_dim (int): Input dimension of node feature embedding vectors. 
+        enc_node_hidden_sizes ([int]): Number of hidden neurons in each linear layer
+            for transforming the node features.
+        prop_node_hidden_sizes ([int]): Number of hidden neurons in each linear layer of 
+            node update MLP :obj:`f_node`. :obj:`node_feature_dim` is appended as
+            the size of the final linear layer to maintain node embedding dimensionality
+        prop_message_hidden_sizes ([int]): Number of hidden neurons in each linear layer of 
+            message computation MLP :obj:`f_node`. Note that the message vector dimensionality 
+            (:obj:`prop_message_hidden_sizes[-1]`) may not be equal to :obj:`node_feature_dim`.
+        edge_feature_dim (int, optional): Input dimension of node feature embedding vectors.
+            (default: :obj:`None`)
+        enc_edge_hidden_sizes ([int], optional): Number of hidden neurons in each linear layer
+            for transforming the edge features.
+            (default: :obj:`None`)
+        message_net_init_scale (float, optional): Initialisation scale for the message net output vectors.
+            (default: :obj:`0.1`)
+        node_update_type (str, optional): Type of update applied to node feature vectors (:obj:`"GRU"` or 
+            :obj:`"MLP"` or :obj:`"residual"`). 
+            (default: :obj:`"GRU"`)
+        use_reverse_direction (bool, optional): Flag for whether or not to use the reverse message 
+            aggregation for propagation step.
+            (default: :obj:`True`)
+        reverse_dir_param_different (bool, optional): Flag for whether or not message computation 
+            model parameters should be shared by forward and reverse messages in propagation step.
+            (default: :obj:`True`)
+        layer_norm (bool, optional): Flag for applying layer normalization in propagation step.
+            (default: :obj:`False`)
+        lrl_hidden_sizes ([int], optional): List containing the sizes for LRL network to pass edge features
+            of input graphs.
+            (default: :obj:`[16,16]`)
+        temp (float, optional): Temperature parameter in the Gumbel-Sinkhorn Network.
+            (default: :obj:`0.1`)
+        eps (float, optional): Small value for numerical stability and precision in the Gumbel-Sinkhorn Network.
+            (default: :obj:`1e-20`)
+        noise_factor (float, optional): Parameter which controls the magnitude of the effect of sampled Gumbel Noise.
+            (default: :obj:`1`)
+        gs_num_iters (int, optional): Number of iterations of Sinkhorn Row and Column scaling (in practice, 
+            as little as 20 iterations are needed to achieve decent convergence for N~100).
+            (default: :obj:`20`)
     """
     def __init__(self, node_feature_dim: int, enc_node_hidden_sizes: List[int], 
                 prop_node_hidden_sizes: List[int], prop_message_hidden_sizes: List[int],

@@ -1,8 +1,7 @@
-from typing import Optional, List, Type
+from typing import Optional, List
 
 import torch
 from torch.functional import Tensor
-from torch.nn.utils.rnn import pad_sequence
 import torch.nn.functional
 from torch_geometric.nn.conv import GCNConv, SAGEConv, GATConv
 from torch_geometric.utils import to_dense_batch

@@ -37,13 +37,14 @@ class NeuralTensorNetwork(torch.nn.Module):
         torch.nn.init.xavier_uniform_(self.weight_matrix)
         torch.nn.init.xavier_uniform_(self.bias)
     
-    def forward(self, h_i: Tensor, h_j: Tensor):
+    def forward(self, h_i: Tensor, h_j: Tensor) -> torch.Tensor:
         r"""
         Args:
-            h_i: First graph-level embedding
-            h_j: Second graph-level embedding
+            h_i: Graph-level Embedding of the Source/Query graph 
+            h_j: Graph-level Embedding of the Corpus/Target graph
+
         Returns:
-            scores: (K, 1) graph-graph interaction score vector
+            (K, 1) graph-graph interaction score vector
         """
         scores = torch.matmul(h_i.unsqueeze(-2).unsqueeze(-2), self.weight_tensor)
         scores = torch.matmul(scores, h_j.unsqueeze(-2).unsqueeze(-1)).squeeze(-1)
@@ -62,6 +63,21 @@ class NeuralTensorNetwork(torch.nn.Module):
     
 class GumbelSinkhornNetwork(torch.nn.Module):
     r"""
+    Implementation of the Gumbel-Sinkhorn Network from the `"Learning Latent Permutations with Gumbel-Sinkhorn Networks" 
+    <https://arxiv.org/pdf/1802.08665.pdf>`_ paper.
+
+    Args:
+        temp (float, optional): Temperature parameter for softmax distribution. Lower the value causes 
+            softmax probabilities to approach a one-hot vector. Thus, this is a differentiable way to 
+            approach a categorical distribution.
+            (default: :obj:`0.1`)
+        eps (float, optional): Small value for numerical stability and precision.
+            (default: :obj:`1e-20`)
+        noise_factor (float, optional): Parameter which controls the magnitude of the effect of sampled Gumbel Noise
+            (default: :obj:`1`)
+        n_iters (int, optional): Number of iterations of Sinkhorn Row and Column scaling (in practice, as little as 20
+            iterations are needed to achieve decent convergence for N~100).
+            (default: :obj:`20`)
     """
     def __init__(self, temp: float = 0.1, eps: float = 1e-20, noise_factor: float = 1, n_iters: int = 20):
         super().__init__()
@@ -74,7 +90,22 @@ class GumbelSinkhornNetwork(torch.nn.Module):
         U = torch.rand(shape).float()
         return -torch.log(eps - torch.log(U + eps))
 
-    def forward(self, log_alpha:Tensor):
+    def forward(self, log_alpha:Tensor) -> torch.Tensor:
+        r"""
+        Args:
+            log_alpha (torch.Tensor): A Tensor with elements being the logarithms of assignment probabilites
+
+        Shapes:
+            - **input:**
+             log_alpha: 2D Tensor of shape :math:`(N, N)` or 3D tensor of shape :math:`(\mbox{batch_size}, N, N)`
+            - **output:** Doubly Stochastic Matrix :math:`(\mbox{batch_size}, N, N)`
+            
+        Returns:
+            A 3D tensor of close-to-doubly-stochastic matrices (2D tensors are converted to 
+            3D tensors with batch_size equals to 1)
+
+        :rtype: :class:`torch.Tensor`
+        """
         batch_size = log_alpha.size()[0]
         n = log_alpha.size()[1]
         log_alpha = log_alpha.view(-1, n, n)
