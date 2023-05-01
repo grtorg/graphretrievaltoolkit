@@ -7,7 +7,7 @@ name = "graph_retrieval_toolkit"
 version = "0.0.1"
 authors = [
   { name="Sanidhya Anand", email="sanidhya.anand@iitb.ac.in" },
-  { name="Kunind Sahu" }
+  { name="Kunind Sahu", email="kunind444@gmail.com"}
 ]
 description = ""
 readme = "README.md"
@@ -19,5 +19,5 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/sanidhyaanand/graphretrievaltoolkit"
-"Bug Tracker" = "https://github.com/sanidhyaanand/graphretrievaltoolkit/issues"
+"Homepage" = "https://github.com/grtorg/graphretrievaltoolkit"
+"Bug Tracker" = "https://github.com/grtorg/graphretrievaltoolkit/issues"
