@@ -13,6 +13,7 @@ Graph Matching Networks
 GraphSim
 -------------------------
 .. autoclass:: sgmatch.models.GraphSim.GraphSim
+.. autoclass:: sgmatch.models.GraphSim.GraphSim_v2
 
 NeuroMatch
 -------------------------

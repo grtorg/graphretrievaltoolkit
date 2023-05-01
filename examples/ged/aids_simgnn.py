@@ -1,14 +1,10 @@
-from typing import List, Tuple
 import tqdm
 import os
 import os.path as osp
 
 import torch
-import os
-from torch.functional import Tensor
 from torch_geometric.loader import DataLoader
 import numpy as np
-from torch_geometric.utils import to_dense_batch
 
 from sgmatch.utils.utility import Namespace, GraphPair
 from sgmatch.models.matcher import graphMatcher

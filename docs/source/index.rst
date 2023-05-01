@@ -19,6 +19,12 @@ Contents
 
 .. toctree::
     :maxdepth: 1
+    :caption: Tutorial
+
+    tutorial
+
+.. toctree::
+    :maxdepth: 1
     :caption: Models
 
     models
