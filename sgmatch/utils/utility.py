@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 import torch
 from torch_geometric.data import Data
@@ -124,6 +124,35 @@ def setup_LRL_nn(input_dim: int, hidden_sizes: List[int],
     mlp = torch.nn.Sequential(*mlp)
     
     return mlp
+
+def setup_cnn_layers(kernel_sizes, in_channels, out_channels, stride=1, groups=1):
+    num_layers = len(kernel_sizes)
+    layer_list = []
+    for i in range(num_layers):
+        stride_val = stride if type(stride) is not list else stride[i]
+        group_val = groups if type(stride) is not list else groups[i]
+        layer_list.append(torch.nn.Conv2d(in_channels=in_channels[i]*group_val, out_channels=out_channels[i]*group_val,
+                                  kernel_size=kernel_sizes[i], stride=stride_val, groups=group_val))
+    return layer_list
+        
+def setup_maxpool_layers(kernel_sizes, stride=1):
+    num_layers = len(kernel_sizes)
+    layer_list = []
+    for i in range(num_layers):
+        stride_val = stride if type(stride) is not list else stride[i]
+        layer_list.append(torch.nn.MaxPool2d(kernel_size=kernel_sizes[i], stride=stride_val))
+    return layer_list
+        
+
+    #padding_temp = (self.kernel_size - 1)//2
+    #if self.kernel_size%2 == 0:
+    #    self.padding = torch.nn.ZeroPad2d((padding_temp, padding_temp+1, padding_temp, padding_temp+1))
+    #else:
+    #    self.padding = torch.nn.ZeroPad2d((padding_temp, padding_temp, padding_temp, padding_temp))
+    layers = torch.nn.ModuleList([torch.nn.Conv2d(in_channels=self.in_channels, out_channels=self.out_channels,
+                                  kernel_size=self.kernel_size, stride=stride) for i in range(num_similarity_matrices)])
+    
+    return layers
 
 def setup_conv_layers(input_dim, conv_type, filters):
     r"""
