@@ -4,12 +4,10 @@ import torch
 import torch.nn.functional as F
 from torch.functional import Tensor
 from torch.nn import Linear, Dropout, Sequential, ModuleList
-from torch.nn.utils.rnn import pad_sequence
 from torch_geometric.utils import to_dense_batch, unbatch, degree
-from torch_scatter import scatter_mean, scatter_add
 
-from ..utils.utility import setup_linear_nn, setup_conv_layers, setup_LRL_nn
-from ..utils.constants import ACTIVATION_LAYERS, ACTIVATIONS
+from ..utils.utility import setup_linear_nn, setup_conv_layers, setup_LRL_nn, setup_cnn_layers, setup_maxpool_layers
+from ..utils.constants import ACTIVATION_LAYERS
 
 class GraphSim(torch.nn.Module):
     r"""
@@ -97,8 +95,12 @@ class GraphSim(torch.nn.Module):
             gnn_layer.reset_parameter()
 
         # TODO: Test correctness
-        self.conv_filters.reset_parameters()
+        for filter in self.conv_filters:
+            filter.reset_parameters()
         self.mlp.reset_parameters()
+
+        for layer in self.scoring_layer:
+            layer.reset_parameters()
         
 
     def forward(self, x_i: Tensor, x_j: Tensor, edge_index_i: Tensor, edge_index_j: Tensor, batch_i:Tensor, batch_j:Tensor):
@@ -207,7 +209,9 @@ class GraphSim_v2(torch.nn.Module):
         activation_slope (int, optional): Slope of negative part in case of :obj:`"leaky_relu"` activation
             (default: :obj:`0.1`)
     """ 
-    def __init__(self, input_dim: int, gnn: str = "GCN", gnn_filters: List[int] = [64, 32, 16], conv_filters: ModuleList = None, 
+    def __init__(self, input_dim: int, conv_kernel_sizes, conv_in_channels, conv_out_channels,
+                 conv_stride, maxpool_kernel_sizes, maxpool_stride, cnn_dropout_p = 0.2,
+                 gnn: str = "GCN", gnn_filters: List[int] = [64, 32, 16],
                  mlp_neurons: List[int] = [32,16,8,4,1], padding_correction: bool = True, resize_dim: int = 10, 
                  resize_mode = "bilinear", gnn_activation: str = "relu", mlp_activation: str = "relu", gnn_dropout_p: float = 0.5,
                  activation_slope: Optional[float] = 0.1):
@@ -227,7 +231,13 @@ class GraphSim_v2(torch.nn.Module):
         # Convolution Layer
         # XXX: Should users be allowed to pass torch.nn.Sequential layers for Conv directly?
         # XXX: Do we need to make additional Image Conv setup utility methods?
-        self.conv_filters = conv_filters
+        self.conv_kernel_sizes = conv_kernel_sizes
+        self.conv_in_channels = conv_in_channels
+        self.conv_out_channels = conv_out_channels
+        self.conv_stride = conv_stride
+        self.maxpool_kernel_sizes = maxpool_kernel_sizes
+        self.maxpool_stride = maxpool_stride
+        self.cnn_dropout_p = cnn_dropout_p
 
         # MLP Layer which takes Convolution Output as Input
         self.mlp_neurons = mlp_neurons
@@ -239,6 +249,11 @@ class GraphSim_v2(torch.nn.Module):
     def setup_layers(self):
         # GCN Layers 
         self.gnn_layers = setup_conv_layers(self.input_dim, self.gnn_type, filters=self.gnn_filters)
+
+        # CNN Layer
+        self.cnn_layers = setup_cnn_layers(self.conv_kernel_sizes, self.conv_in_channels, self.conv_out_channels,
+                                           self.conv_stride, groups=len(self.gnn_layers))
+        self.maxpool_layers = setup_maxpool_layers(self.maxpool_kernel_sizes, self.maxpool_stride)
 
         # Fully Connected Layer
         W = torch.randn(2, 1, self.sim_mat_dim, self.sim_mat_dim) # Dummy Matrix
@@ -254,8 +269,12 @@ class GraphSim_v2(torch.nn.Module):
             gnn_layer.reset_parameter()
 
         # TODO: Test correctness
-        self.conv_filters.reset_parameters()
+        for filter in self.conv_filters:
+            filter.reset_parameters()
         self.mlp.reset_parameters()
+
+        for layer in self.scoring_layer:
+            layer.reset_parameters()
         
 
     def forward(self, x_i: Tensor, x_j: Tensor, edge_index_i: Tensor, edge_index_j: Tensor, batch_i:Tensor, batch_j:Tensor):
@@ -307,18 +326,20 @@ class GraphSim_v2(torch.nn.Module):
                 batched_resized_sim_matrices = F.interpolate(sim_matrix, size=self.sim_mat_dim, mode=self.resize_mode)
             sim_matrix_list.append(batched_resized_sim_matrices) # [(B, N_reduced, N_reduced)]
 
-        # Passing similarity images through Conv2d and MLP to get similarity score
-        
-        # sim_matrix_batch = torch.stack(sim_matrix_list, dim=-1) # (B, N_reduced, N_reduced, N_gnn_layers)
-        # XXX: Can we use Group Convolutions instead of Looping over Convolved Multi-Scale Sim Matrices
-        #sim_matrix_img_batch = sim_matrix_batch.permute(0,3,1,2)
-        image_embedding_list = list(map(lambda x, conv_layer: conv_layer(x.unsqueeze(0)).squeeze(0), 
-                                        sim_matrix_list, self.conv_filters)) # [(C,H,W),]
-        similarity_scores = torch.stack(image_embedding_list).view(B,-1) # (B, C*H*W)
+        # Passing similarity images through Conv2d to get heirarchical image features
+        sim_matrix_batch = torch.stack(sim_matrix_list, dim=1) # (B, N_gnn_layers, N_reduced, N_reduced)
+        for i in range(len(self.cnn_layers)):
+            sim_matrix_batch = self.cnn_layers[i](sim_matrix_batch)
+            sim_matrix_batch = torch.nn.functional.relu(sim_matrix_batch)
+            sim_matrix_batch = self.maxpool_layers[i](sim_matrix_batch)
+            sim_matrix_batch = torch.nn.functional.dropout(sim_matrix_batch, p=self.cnn_dropout_p)
+
+        # Flattening the image features into one vector per graph batch
+        # (B, N_gnn_layers, N_gnn_layers*N_out, N_gnn_layers*N_out) -> (B, N_gnn_layers^3 * N_out^2)
+        similarity_scores = sim_matrix_batch.view(B,-1)
 
         # Passing Input to MLP
         similarity_scores = self.mlp(similarity_scores)
         similarity_scores = self.scoring_layer(similarity_scores)
         similarity_scores = torch.nn.Sigmoid(similarity_scores)
-        
         return similarity_scores.view(-1)
