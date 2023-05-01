@@ -13,6 +13,7 @@ CONVS = {"GCN": pyg_nn.GCNConv,
         )),
         "graph": pyg_nn.GraphConv, 
         "gated": lambda h, num_hidden: pyg_nn.GatedGraphConv(h, num_hidden),
+        "PNA": pyg_nn.PNAConv,
         "Neuro-PNA": pyg_nn.SAGEConv}
     
 ACTIVATION_LAYERS = {"sigmoid": torch.nn.Sigmoid, "relu": torch.nn.ReLU,
