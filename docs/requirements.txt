@@ -1,5 +1,2 @@
 torch
 numpy
-torch-scatter
-torch-sparse
-torch-geometric
