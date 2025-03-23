@@ -215,7 +215,7 @@ class GraphSim_v2(torch.nn.Module):
                  mlp_neurons: List[int] = [32,16,8,4,1], padding_correction: bool = True, resize_dim: int = 10, 
                  resize_mode = "bilinear", gnn_activation: str = "relu", mlp_activation: str = "relu", gnn_dropout_p: float = 0.5,
                  activation_slope: Optional[float] = 0.1):
-        super(GraphSim, self).__init__()
+        super(GraphSim_v2, self).__init__()
         # GNN Arguments
         self.input_dim = input_dim
         self.gnn_type = gnn
