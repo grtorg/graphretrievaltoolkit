@@ -8,7 +8,7 @@ from .constants import CONVS, ACTIVATION_LAYERS
 class Namespace():
     def __init__(self, model_name: str, **kwargs):
         self.model_name = model_name
-        self.update_default_arguments()
+        self.update_default_args()
         self.__dict__.update(kwargs)
 
     def update_default_args(self):
